@@ -5,11 +5,6 @@ var elements = {
 	"fuseButton" : getElement("#fuseButton")
 }
 
-var spriteURLs = {
-	"charizard" : "https://img.pokemondb.net/sprites/black-white/normal/charizard.png",
-	"dragonite" : "https://img.pokemondb.net/sprites/black-white/normal/dragonite.png"
-}
-
 function getElement(name) {
 	return document.querySelector(name);
 }
@@ -19,17 +14,18 @@ function getPokemonSpriteURL(pokemon) {
 }
 
 function setupElements() {
-	drawPokemon("charizard", elements.pokemonA);
-	drawPokemon("dragonite", elements.pokemonB);
+	drawPokemon("charizard/charizard", elements.pokemonA);
+	drawPokemon("dragonite/dragonite", elements.pokemonB);
+	drawPokemon("dragonite/test_fusion_charizard_dragonite", elements.fusedPokemon);
 }
 
-function getPokemonImage(pokemon) {
-	/* INPUT: String pokemon
+function getPokemonImage(imageName) {
+	/* INPUT: String imageName
 	 * OUTPUT: Image sprite of pokemon
 	*/
-	var url = spriteURLs[pokemon];
+	var location = `images/${imageName}.png`;
 	var sprite = new Image();
-	sprite.src = url;
+	sprite.src = location;
 	
 	return sprite;
 }
