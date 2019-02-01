@@ -5,7 +5,7 @@ var elements = {
 	"fuseButton" : getElement("#fuseButton")
 }
 
-var spriteURLS = {
+var spriteURLs = {
 	"charizard" : "https://img.pokemondb.net/sprites/black-white/normal/charizard.png",
 	"dragonite" : "https://img.pokemondb.net/sprites/black-white/normal/dragonite.png"
 }
@@ -27,7 +27,7 @@ function getPokemonImage(pokemon) {
 	/* INPUT: String pokemon
 	 * OUTPUT: Image sprite of pokemon
 	*/
-	var url = spriteURLS[pokemon];
+	var url = spriteURLs[pokemon];
 	var sprite = new Image();
 	sprite.src = url;
 	
