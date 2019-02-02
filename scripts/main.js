@@ -17,6 +17,24 @@ function setupElements() {
 	drawPokemon("charizard/charizard", elements.pokemonA);
 	drawPokemon("dragonite/dragonite", elements.pokemonB);
 	drawPokemon("dragonite/test_fusion_charizard_dragonite", elements.fusedPokemon);
+	
+	var element = elements.pokemonA;
+	element.onclick = e => 
+		console.log(getMousePosition(e, element));
+		
+	var element = elements.pokemonB;
+	element.onclick = e => 
+		console.log(getMousePosition(e, element));
+	
+	var element = elements.fusedPokemon;
+	element.onclick = e => 
+		console.log(getMousePosition(e, element));
+	
+	var element = elements.fuseButton;
+	element.onclick = e => 
+		console.log(getMousePosition(e, element));
+		
+	
 }
 
 function getPokemonImage(imageName) {
@@ -39,6 +57,11 @@ function drawPokemon(pokemon, canvas) {
 	canvas.width = pokemonImage.width;
 	canvas.height = pokemonImage.height;
 	pokemonImage.onload = () => ctx.drawImage(pokemonImage, 0, 0);
+}
+
+function getMousePosition(event, element) {
+	return {"x" : event.clientX - element.offsetLeft,
+			"y" : event.clientY - element.offsetTop};
 }
 
 function main() {
