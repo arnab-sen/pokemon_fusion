@@ -106,6 +106,8 @@ function setUpElements() {
 	elements.clearButton.onclick = () => {
 		var canvas = elements.mainCanvas;
 		canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+		assets.layers = [new Layer(0, elements.mainCanvas)];
+		parameters.currentLayer = 0;
 		snapshotCanvas(canvas);
 	}
 	
