@@ -8,4 +8,15 @@ canvas {
 
 #browseButton {
 	color: silver;
+	font-size: 13px;
+}
+
+button {
+	margin-top: 2px;
+}
+
+label {
+	color: silver;
+	font-family: Arial;
+	font-size: 13px;
 }

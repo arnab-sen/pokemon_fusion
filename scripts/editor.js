@@ -1,16 +1,55 @@
+class Layer {
+	constructor(order, parentCanvas) {
+		this.order = order;
+		this.width = parentCanvas.width;
+		this.height = parentCanvas.height;
+		this.layer = document.createElement("canvas");
+		this.layer.width = this.width;
+		this.layer.height = this.height;
+		this.images = [];
+	}
+	
+	draw(canvas) {
+		var ctx = canvas.getContext("2d");
+		for (var i = 0; i < this.images.length; i++) {
+			ctx.drawImage(this.images[i].image, this.images[i].x, this.images[i].y);
+		}
+	}
+	
+	addImage(image, x, y) {
+		this.images.push({"image" : image, "x" : x, "y" : y});
+	}
+	
+	changeLatestImage(image, x, y) {
+		if (this.images.length > 0) {
+			this.images[this.images.length - 1] = {"image" : image, "x" : x, "y" : y};
+		} else {
+			this.addImage(image, x, y);
+		}
+	}
+}
+
 var elements = {
 	"mainCanvas" : getElement("#mainCanvas"),
+	"layerCanvas" : getElement("#layerCanvas"),
 	"clearButton" : getElement("#clearButton"),
-	"browseButton" : getElement("#browseButton")
+	"browseButton" : getElement("#browseButton"),
+	"prevLayer" : getElement("#prevLayer"),
+	"nextLayer" : getElement("#nextLayer"),
+	"addLayer" : getElement("#addLayer"),
+	"currentLayer" : getElement("#currentLayer")
 }
 
 var parameters = {
-	
+	"currentLayer" : 0
 }
 
 var assets = {
+	"mainCanvas" : elements.mainCanvas,
 	"latestImage" : null,
-	"canvasSnapshot" : null
+	"canvasSnapshot" : null,
+	"blankCanvas" : null,
+	"layers" : []
 }
 
 function getElement(name) {
@@ -36,8 +75,33 @@ function restoreCanvas(canvas) {
 	canvas.getContext("2d").putImageData(assets.canvasSnapshot, 0, 0);
 }
 
+function drawScaledImage(canvas, imageData, scale, position) {
+	var ctx = canvas.getContext("2d");
+	ctx.scale(scale.x, scale.y);
+	ctx.drawImage(imageData, position.x, position.y);
+	ctx.scale(1/scale.x, 1/scale.y);
+}
+
+function drawText(canvas, text, x, y) {
+		var ctx = canvas.getContext("2d");
+		ctx.font = "20px Arial";
+		ctx.fillStyle = "black";
+		ctx.textAlign = "center";
+		ctx.fillText(text, x, y);
+}
+
+function drawFromLayers() {
+	for (var i = 0; i < assets.layers.length; i++) {
+		assets.layers[i].draw(elements.mainCanvas);
+	}
+}
+
 function setUpElements() {
-	window.onload = () => snapshotCanvas(elements.mainCanvas);
+	window.onload = () => {
+		snapshotCanvas(elements.mainCanvas);
+		assets.blankCanvas = assets.canvasSnapshot;
+		assets.layers.push(new Layer(0, assets.blankCanvas, elements.mainCanvas));
+	}
 	
 	elements.clearButton.onclick = () => {
 		var canvas = elements.mainCanvas;
@@ -56,12 +120,19 @@ function setUpElements() {
 	});
 		
 	elements.mainCanvas.onclick = e => {
-		if (assets.latestImage == null) return;
-		var ctx = elements.mainCanvas.getContext("2d");
+		if (assets.latestImage == null) {
+			return;
+		}
+		var currentLayer = assets.layers[parameters.currentLayer];
+		var ctx = currentLayer.layer.getContext("2d");
 		var mousePos = getMousePosition(e, elements.mainCanvas);
 		centreMousePosition(mousePos, assets.latestImage);
-		ctx.drawImage(assets.latestImage, mousePos.x, mousePos.y);
+		currentLayer.changeLatestImage(assets.latestImage, mousePos.x, mousePos.y);
+		drawFromLayers();
+		
 		if (e.type == "click") {
+			currentLayer.addImage(assets.latestImage, mousePos.x, mousePos.y);
+			drawFromLayers();
 			snapshotCanvas(elements.mainCanvas);
 			assets.latestImage = null;
 		}
@@ -73,6 +144,22 @@ function setUpElements() {
 			elements.mainCanvas.onclick(e);
 		}
 	});
+	
+	elements.prevLayer.onclick = () => {
+		if (parameters.currentLayer > 0) parameters.currentLayer--;
+		elements.currentLayer.textContent = `Current Layer: ${parameters.currentLayer}`;
+	}
+	
+	elements.nextLayer.onclick = () => {
+		if (parameters.currentLayer < assets.layers.length - 1) 
+				parameters.currentLayer++;
+		elements.currentLayer.textContent = `Current Layer: ${parameters.currentLayer}`;
+	}
+	
+	elements.addLayer.onclick = () => {
+		assets.layers.push(new Layer(++parameters.currentLayer, elements.mainCanvas));
+		elements.currentLayer.textContent = `Current Layer: ${parameters.currentLayer}`;
+	}
 }
 
 function main() {
