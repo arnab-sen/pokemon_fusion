@@ -37,6 +37,7 @@ var elements = {
 	"prevLayer" : getElement("#prevLayer"),
 	"nextLayer" : getElement("#nextLayer"),
 	"addLayer" : getElement("#addLayer"),
+	"deleteLayer" : getElement("#deleteLayer"),
 	"currentLayer" : getElement("#currentLayer")
 }
 
@@ -91,6 +92,8 @@ function drawText(canvas, text, x, y) {
 }
 
 function drawFromLayers() {
+	var canvas = elements.mainCanvas;
+	canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
 	for (var i = 0; i < assets.layers.length; i++) {
 		assets.layers[i].draw(elements.mainCanvas);
 	}
@@ -161,6 +164,16 @@ function setUpElements() {
 	elements.addLayer.onclick = () => {
 		assets.layers.push(new Layer(++parameters.currentLayer, elements.mainCanvas));
 		elements.currentLayer.textContent = `Current Layer: ${parameters.currentLayer}`;
+	}
+	
+	elements.deleteLayer.onclick = () => {
+		assets.layers.splice(parameters.currentLayer, 1);
+		elements.prevLayer.onclick();
+		if (assets.layers.length == 0) {
+			assets.layers.push(new Layer(0, elements.mainCanvas));
+		}
+		
+		drawFromLayers();
 	}
 }
 
