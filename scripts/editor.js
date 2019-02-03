@@ -130,7 +130,6 @@ function drawImageBuffer(mousePos) {
 }
 
 function getImageAtPosition(x, y) {
-	var canvas = elements.mainCanvas;
 	var currentLayer = getCurrentLayer();
 	for (var i = 0; i < currentLayer.images.length; i++) {
 		var image = currentLayer.images[i];
