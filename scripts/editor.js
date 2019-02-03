@@ -17,7 +17,8 @@ class Layer {
 	}
 	
 	addImage(image, x, y) {
-		this.images.push({"image" : image, "x" : x, "y" : y});
+		this.images.push({"image" : image, "x" : x, "y" : y, 
+			"width" : image.width, "height" : image.height});
 	}
 	
 	changeLatestImage(image, x, y) {
@@ -38,16 +39,20 @@ var elements = {
 	"nextLayer" : getElement("#nextLayer"),
 	"addLayer" : getElement("#addLayer"),
 	"deleteLayer" : getElement("#deleteLayer"),
-	"currentLayer" : getElement("#currentLayer")
+	"currentLayer" : getElement("#currentLayer"),
+	"moveImage" : getElement("#moveImage")
 }
 
 var parameters = {
-	"currentLayer" : 0
+	"currentLayer" : 0,
+	"moveImage" : false,
+	"events" : null
 }
 
 var assets = {
 	"mainCanvas" : elements.mainCanvas,
 	"latestImage" : null,
+	"selectedImage" : null,
 	"canvasSnapshot" : null,
 	"blankCanvas" : null,
 	"layers" : []
@@ -57,9 +62,20 @@ function getElement(name) {
 	return document.querySelector(name);
 }
 
+function createEvents() {
+	var events = {};
+	var eventTypes = ["mousedown", "mouseup", "mousemove"];
+	
+	for (var i = 0; i < eventTypes.length; i++) {
+		events[eventTypes[i]] = false;
+	}
+	
+	return events;
+}
+
 function getMousePosition(event, element) {
 	return {"x" : event.clientX - element.offsetLeft,
-			"y" : event.clientY - element.offsetTop};
+		"y" : event.clientY - element.offsetTop};
 }
 
 function centreMousePosition(mousePos, image) {
@@ -99,11 +115,33 @@ function drawFromLayers() {
 	}
 }
 
+function getImageAtPosition(x, y) {
+	var canvas = elements.mainCanvas;
+	var currentLayer = assets.layers[parameters.currentLayer];
+	for (var i = 0; i < currentLayer.images.length; i++) {
+		var image = currentLayer.images[i];
+		var rect = {"x" : image.x, "y" : image.y, 
+			"width" : image.width, "height" : image.height};
+		
+		if (pointInRect(x, y, rect)) {
+			return image;
+		}
+	}
+}
+
+function pointInRect(x, y, rect) {
+	if (x >= rect.x && x <= (rect.x + rect.width) &&
+		y >= rect.y && y <= (rect.y + rect.height)) return true;
+		
+	return false;
+}
+
 function setUpElements() {
 	window.onload = () => {
 		snapshotCanvas(elements.mainCanvas);
 		assets.blankCanvas = assets.canvasSnapshot;
 		assets.layers.push(new Layer(0, assets.blankCanvas, elements.mainCanvas));
+		parameters.events = createEvents();
 	}
 	
 	elements.clearButton.onclick = () => {
@@ -124,26 +162,48 @@ function setUpElements() {
 		reader.readAsDataURL(e.target.files[0]);
 	});
 		
-	elements.mainCanvas.onclick = e => {
-		if (assets.latestImage == null) {
-			return;
+	elements.mainCanvas.addEventListener("mousedown", e => {
+		parameters.events["mousedown"] = true;
+		parameters.events["mouseup"] = false;
+		var mousePos = getMousePosition(e, elements.mainCanvas);
+		
+		if (parameters.moveImage) {
+			assets.selectedImage = getImageAtPosition(mousePos.x, mousePos.y);
 		}
+	});	
+	
+	elements.mainCanvas.addEventListener("mouseup", e => {
+		parameters.events["mousedown"] = false;
+		parameters.events["mouseup"] = true;
+	});	
+	
+	elements.mainCanvas.onclick = e => {
 		var currentLayer = assets.layers[parameters.currentLayer];
 		var ctx = currentLayer.layer.getContext("2d");
 		var mousePos = getMousePosition(e, elements.mainCanvas);
+	
+		if (assets.latestImage == null) {
+			return;
+		}
+		
 		centreMousePosition(mousePos, assets.latestImage);
 		currentLayer.changeLatestImage(assets.latestImage, mousePos.x, mousePos.y);
 		drawFromLayers();
+		if (parameters.moveImage) currentLayer.images.pop();
 		
 		if (e.type == "click") {
 			currentLayer.addImage(assets.latestImage, mousePos.x, mousePos.y);
-			drawFromLayers();
 			snapshotCanvas(elements.mainCanvas);
 			assets.latestImage = null;
 		}
 	};
 	
 	elements.mainCanvas.addEventListener("mousemove", e => {
+		if (parameters.events["mousedown"] && parameters.moveImage
+			&& assets.selectedImage != null) {
+			assets.latestImage = assets.selectedImage.image;
+		}
+
 		if (assets.latestImage != null) {
 			restoreCanvas(elements.mainCanvas);
 			elements.mainCanvas.onclick(e);
@@ -174,6 +234,12 @@ function setUpElements() {
 		}
 		
 		drawFromLayers();
+	}
+	
+	elements.moveImage.onclick = () => {
+		parameters.moveImage = !parameters.moveImage;
+		var text = {true : "On", false : "Off"};
+		elements.moveImage.textContent = `Move Image: ${text[parameters.moveImage]}`;
 	}
 }
 
