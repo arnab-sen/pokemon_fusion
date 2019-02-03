@@ -7,7 +7,6 @@ class Layer {
 		this.layer.width = this.width;
 		this.layer.height = this.height;
 		this.images = [];
-		this.numImages = 0;
 		this.imageBuffer = null;
 	}
 	
@@ -173,11 +172,9 @@ function setUpElements() {
 			var image = new Image();
 			image.src = e.target.result;
 			image.onload = () => {
-				assets.latestImage = image;
 				var currentLayer = getCurrentLayer()
 				currentLayer.addImage(image, 0, 0);
-				currentLayer.numImages++;
-				currentLayer.imageBuffer = currentLayer.images[currentLayer.images.length - 1];
+				currentLayer.imageBuffer = currentLayer.getLastImage();
 			}
 		};
 		reader.readAsDataURL(e.target.files[0]);
