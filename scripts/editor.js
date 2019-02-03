@@ -7,6 +7,7 @@ class Layer {
 		this.layer.width = this.width;
 		this.layer.height = this.height;
 		this.images = [];
+		this.numImages = 0;
 	}
 	
 	draw(canvas) {
@@ -45,7 +46,7 @@ var elements = {
 
 var parameters = {
 	"currentLayer" : 0,
-	"moveImage" : false,
+	"moveImage" : true,
 	"events" : null
 }
 
@@ -76,6 +77,10 @@ function createEvents() {
 function getMousePosition(event, element) {
 	return {"x" : event.clientX - element.offsetLeft,
 		"y" : event.clientY - element.offsetTop};
+}
+
+function getCurrentLayer() {
+	return assets.layers[parameters.currentLayer];
 }
 
 function centreMousePosition(mousePos, image) {
@@ -157,7 +162,10 @@ function setUpElements() {
 		reader.onload = e => {
 			var image = new Image();
 			image.src = e.target.result;
-			image.onload = () => assets.latestImage = image;
+			image.onload = () => {
+				assets.latestImage = image;
+				getCurrentLayer().numImages++;
+			}
 		};
 		reader.readAsDataURL(e.target.files[0]);
 	});
@@ -189,7 +197,8 @@ function setUpElements() {
 		centreMousePosition(mousePos, assets.latestImage);
 		currentLayer.changeLatestImage(assets.latestImage, mousePos.x, mousePos.y);
 		drawFromLayers();
-		if (parameters.moveImage) currentLayer.images.pop();
+		if (parameters.moveImage && currentLayer.images.length > currentLayer.numImages) 
+			currentLayer.images.pop();
 		
 		if (e.type == "click") {
 			currentLayer.addImage(assets.latestImage, mousePos.x, mousePos.y);
