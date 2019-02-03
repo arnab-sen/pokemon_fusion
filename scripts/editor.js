@@ -8,6 +8,7 @@ class Layer {
 		this.layer.height = this.height;
 		this.images = [];
 		this.numImages = 0;
+		this.imageBuffer = null;
 	}
 	
 	draw(canvas) {
@@ -22,12 +23,13 @@ class Layer {
 			"width" : image.width, "height" : image.height});
 	}
 	
-	changeLatestImage(image, x, y) {
-		if (this.images.length > 0) {
-			this.images[this.images.length - 1] = {"image" : image, "x" : x, "y" : y};
-		} else {
-			this.addImage(image, x, y);
-		}
+	getLastImage() {
+		return this.images[this.images.length - 1];
+	}
+	
+	moveImage(positionedImage, position) {
+		positionedImage.x = position.x;
+		positionedImage.y = position.y;
 	}
 }
 
@@ -120,9 +122,17 @@ function drawFromLayers() {
 	}
 }
 
+function drawImageBuffer(mousePos) {
+	var currentLayer = getCurrentLayer();
+	var buffer = currentLayer.imageBuffer;
+	centreMousePosition(mousePos, buffer.image);
+	currentLayer.moveImage(buffer, mousePos);
+	drawFromLayers();
+}
+
 function getImageAtPosition(x, y) {
 	var canvas = elements.mainCanvas;
-	var currentLayer = assets.layers[parameters.currentLayer];
+	var currentLayer = getCurrentLayer();
 	for (var i = 0; i < currentLayer.images.length; i++) {
 		var image = currentLayer.images[i];
 		var rect = {"x" : image.x, "y" : image.y, 
@@ -164,7 +174,10 @@ function setUpElements() {
 			image.src = e.target.result;
 			image.onload = () => {
 				assets.latestImage = image;
-				getCurrentLayer().numImages++;
+				var currentLayer = getCurrentLayer()
+				currentLayer.addImage(image, 0, 0);
+				currentLayer.numImages++;
+				currentLayer.imageBuffer = currentLayer.images[currentLayer.images.length - 1];
 			}
 		};
 		reader.readAsDataURL(e.target.files[0]);
@@ -176,7 +189,7 @@ function setUpElements() {
 		var mousePos = getMousePosition(e, elements.mainCanvas);
 		
 		if (parameters.moveImage) {
-			assets.selectedImage = getImageAtPosition(mousePos.x, mousePos.y);
+			getCurrentLayer().imageBuffer = getImageAtPosition(mousePos.x, mousePos.y);
 		}
 	});	
 	
@@ -186,36 +199,19 @@ function setUpElements() {
 	});	
 	
 	elements.mainCanvas.onclick = e => {
-		var currentLayer = assets.layers[parameters.currentLayer];
-		var ctx = currentLayer.layer.getContext("2d");
+		var currentLayer = getCurrentLayer();
+		if (currentLayer.imageBuffer == null) return;
 		var mousePos = getMousePosition(e, elements.mainCanvas);
-	
-		if (assets.latestImage == null) {
-			return;
-		}
-		
-		centreMousePosition(mousePos, assets.latestImage);
-		currentLayer.changeLatestImage(assets.latestImage, mousePos.x, mousePos.y);
-		drawFromLayers();
-		if (parameters.moveImage && currentLayer.images.length > currentLayer.numImages) 
-			currentLayer.images.pop();
-		
-		if (e.type == "click") {
-			currentLayer.addImage(assets.latestImage, mousePos.x, mousePos.y);
-			snapshotCanvas(elements.mainCanvas);
-			assets.latestImage = null;
-		}
+		drawImageBuffer(mousePos);
+		snapshotCanvas(elements.mainCanvas);
+		currentLayer.imageBuffer = null;
 	};
 	
 	elements.mainCanvas.addEventListener("mousemove", e => {
-		if (parameters.events["mousedown"] && parameters.moveImage
-			&& assets.selectedImage != null) {
-			assets.latestImage = assets.selectedImage.image;
-		}
-
-		if (assets.latestImage != null) {
+		if (getCurrentLayer().imageBuffer != null) {
 			restoreCanvas(elements.mainCanvas);
-			elements.mainCanvas.onclick(e);
+			var mousePos = getMousePosition(e, elements.mainCanvas);
+			drawImageBuffer(mousePos);
 		}
 	});
 	
