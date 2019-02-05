@@ -1,3 +1,4 @@
+
 class Layer {
 	constructor(order, parentCanvas) {
 		this.order = order;
@@ -42,7 +43,8 @@ var elements = {
 	"addLayer" : getElement("#addLayer"),
 	"deleteLayer" : getElement("#deleteLayer"),
 	"currentLayer" : getElement("#currentLayer"),
-	"moveImage" : getElement("#moveImage")
+	"moveImage" : getElement("#moveImage"),
+	"isoLayer" : getElement("#isoLayer")
 }
 
 var parameters = {
@@ -121,6 +123,18 @@ function drawFromLayers() {
 	}
 }
 
+function getLayerImageData(layerNumber) {
+	var layer = assets.layers[layerNumber];
+	var canvas = elements.mainCanvas;
+	var ctx = canvas.getContext("2d");
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	layer.draw(canvas);
+	var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	drawFromLayers();
+	
+	return imageData;
+}
+
 function drawImageBuffer(mousePos) {
 	var currentLayer = getCurrentLayer();
 	var buffer = currentLayer.imageBuffer;
@@ -169,6 +183,7 @@ function setUpElements() {
 		var reader = new FileReader();
 		reader.onload = e => {
 			var image = new Image();
+			console.log(e.target);
 			image.src = e.target.result;
 			image.onload = () => {
 				var currentLayer = getCurrentLayer()
@@ -225,6 +240,7 @@ function setUpElements() {
 	elements.addLayer.onclick = () => {
 		assets.layers.push(new Layer(++parameters.currentLayer, elements.mainCanvas));
 		elements.currentLayer.textContent = `Current Layer: ${parameters.currentLayer}`;
+		pokemonContainer.charizard.drawFromAssets(elements.mainCanvas);
 	}
 	
 	elements.deleteLayer.onclick = () => {
@@ -242,10 +258,13 @@ function setUpElements() {
 		var text = {true : "On", false : "Off"};
 		elements.moveImage.textContent = `Move Image: ${text[parameters.moveImage]}`;
 	}
+	
 }
 
 function main() {
 	setUpElements();
+	//console.log(pokemonContainer.charizard.assetFlags);
+	
 }
 
 main();
