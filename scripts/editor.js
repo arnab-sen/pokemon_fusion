@@ -240,7 +240,7 @@ function setUpElements() {
 	elements.addLayer.onclick = () => {
 		assets.layers.push(new Layer(++parameters.currentLayer, elements.mainCanvas));
 		elements.currentLayer.textContent = `Current Layer: ${parameters.currentLayer}`;
-		pokemonContainer.charizard.drawFromAssets(elements.mainCanvas);
+		pokemonContainer.fusion.drawFromAssets(elements.mainCanvas);
 	}
 	
 	elements.deleteLayer.onclick = () => {

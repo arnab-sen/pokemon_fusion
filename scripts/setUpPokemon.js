@@ -15,12 +15,12 @@ class Pokemon {
 			"base" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0, inFront : true}, 
 			"head" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true}, 
 			"tail" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
-			"armLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
-			"armRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"legLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"legRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
 			"wingLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
 			"wingRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
-			"legLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
-			"legRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true}
+			"armLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"armRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true}
 		};
 	}
 	
@@ -76,6 +76,7 @@ class Pokemon {
 		var ctx = canvas.getContext("2d");
 		var x, y;
 		var asset;
+		
 		for (var key in this.assets) {
 			asset = this.assets[key];
 			if (!asset.inFront) {
@@ -93,6 +94,24 @@ class Pokemon {
 			}
 		}
 	}
+	
+	getAssetsFrom(pokemon, assetKeys) {
+		for (var i = 0; i < assetKeys.length; i++) {
+			this.assets[assetKeys[i]] = pokemon.assets[assetKeys[i]];
+		}
+	} 
+}
+
+function createFusion(pokemon1, pokemon2) {
+	var pokemon1 = pokemonContainer[pokemon1];
+	var pokemon2 = pokemonContainer[pokemon2];
+	var fusion = new Pokemon("fusion");
+	
+	assetKeys = ["armLeft", "armRight", "wingLeft", "wingRight", "head", "tail"];
+	fusion.getAssetsFrom(pokemon2, assetKeys);
+	fusion.getAssetsFrom(pokemon1, ["base", "legLeft", "legRight"]);
+	
+	return fusion;
 }
 
 function setUpPokemon() {
@@ -108,7 +127,7 @@ function setUpPokemon() {
 	charizard.setAssetReceivePosition("wingLeft", {x: 40, y: 42});
 	charizard.setAssetReceivePosition("wingRight", {x: 48, y: 47});
 	charizard.setAssetReceivePosition("legLeft", {x: 32, y: 70});
-	charizard.setAssetReceivePosition("legRight", {x: 58, y: 68});
+	charizard.setAssetReceivePosition("legRight", {x: 55, y: 68});
 	
 	charizard.setAssetPlacePosition("base", {x: 0, y: 0});
 	charizard.setAssetPlacePosition("head", {x: 17, y: 14});
@@ -120,10 +139,37 @@ function setUpPokemon() {
 	charizard.setAssetPlacePosition("legLeft", {x: 9, y: 3});
 	charizard.setAssetPlacePosition("legRight", {x: 5, y: 2});
 	
-	
 	charizard.setBehind(["tail", "armLeft", "wingLeft", "wingRight", "legLeft"]);
+	
+	var dragonite = new Pokemon("dragonite");
+	pokemonContainer.dragonite = dragonite;
+	dragonite.setAssetFlags(["head", "arms", "wings", "legs", "tail"]);
+	dragonite.loadPokemonAssets();
+	dragonite.setAssetReceivePosition("base", {x: 0, y: 0});
+	dragonite.setAssetReceivePosition("head", {x: 29, y: 39});
+	dragonite.setAssetReceivePosition("tail", {x: 90, y: 90});
+	dragonite.setAssetReceivePosition("armLeft", {x: 34, y: 51});
+	dragonite.setAssetReceivePosition("armRight", {x: 48, y: 53});
+	dragonite.setAssetReceivePosition("wingLeft", {x: 45, y: 52});
+	dragonite.setAssetReceivePosition("wingRight", {x: 48, y: 57});
+	dragonite.setAssetReceivePosition("legLeft", {x: 32, y: 70});
+	dragonite.setAssetReceivePosition("legRight", {x: 55, y: 68});
+	
+	dragonite.setAssetPlacePosition("base", {x: 0, y: 0});
+	dragonite.setAssetPlacePosition("head", {x: 17, y: 14});
+	dragonite.setAssetPlacePosition("tail", {x: 32, y: 59});
+	dragonite.setAssetPlacePosition("armLeft", {x: 16, y: 3});
+	dragonite.setAssetPlacePosition("armRight", {x: 1, y: 4});
+	dragonite.setAssetPlacePosition("wingLeft", {x: 28, y: 23});
+	dragonite.setAssetPlacePosition("wingRight", {x: 1, y: 27});
+	dragonite.setAssetPlacePosition("legLeft", {x: 9, y: 3});
+	dragonite.setAssetPlacePosition("legRight", {x: 5, y: 2});
+	
+	dragonite.setBehind(["tail", "armLeft", "wingLeft", "wingRight", "legLeft"]);
+	
 	
 }
 
 var pokemonContainer = {};
 setUpPokemon();
+pokemonContainer["fusion"] = createFusion("charizard", "dragonite");
