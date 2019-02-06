@@ -183,7 +183,6 @@ function setUpElements() {
 		var reader = new FileReader();
 		reader.onload = e => {
 			var image = new Image();
-			console.log(e.target);
 			image.src = e.target.result;
 			image.onload = () => {
 				var currentLayer = getCurrentLayer()
@@ -213,6 +212,7 @@ function setUpElements() {
 		var currentLayer = getCurrentLayer();
 		if (currentLayer.imageBuffer == null) return;
 		var mousePos = getMousePosition(e, elements.mainCanvas);
+		console.log(mousePos);
 		drawImageBuffer(mousePos);
 		snapshotCanvas(elements.mainCanvas);
 		currentLayer.imageBuffer = null;
