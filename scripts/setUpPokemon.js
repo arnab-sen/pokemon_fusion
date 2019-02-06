@@ -10,7 +10,7 @@ class Pokemon {
 			"tail" : false
 			
 		};
-		this.connectionPoints = this.getConnectionPoints();
+
 		this.assets = {
 			"base" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0, inFront : true}, 
 			"head" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true}, 
@@ -25,16 +25,9 @@ class Pokemon {
 	}
 	
 	setAssetFlags(flagArray) {
-		// Sets all input flags to true
 		for (var i = 0; i < flagArray.length; i++) {
 			this.assetFlags[flagArray[i]] = true;
 		}
-	}
-	
-	getConnectionPoints() {
-		var connectionPoints = {};
-		
-		return connectionPoints;
 	}
 	
 	loadPokemonAssets() {
