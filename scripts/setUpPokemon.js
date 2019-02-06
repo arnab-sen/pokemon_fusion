@@ -12,15 +12,15 @@ class Pokemon {
 		};
 		this.connectionPoints = this.getConnectionPoints();
 		this.assets = {
-			"base" : {image: null, x: 0, y: 0, x1: 0, y2: 0, inFront : true}, 
-			"head" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true}, 
-			"tail" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true},
-			"armLeft" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true},
-			"armRight" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true},
-			"wingLeft" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true},
-			"wingRight" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true},
-			"legLeft" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true},
-			"legRight" : {image: null, x: 0, y: 0, x1: 0, y2: 0,  inFront : true}
+			"base" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0, inFront : true}, 
+			"head" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true}, 
+			"tail" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"armLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"armRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"wingLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"wingRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"legLeft" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true},
+			"legRight" : {image: null, x1: 0, y1: 0, x2: 0, y2: 0,  inFront : true}
 		};
 	}
 	
