@@ -1,6 +1,8 @@
 class Pokemon {
-	constructor(name) {
+	constructor(name, prefix, suffix) {
 		this.name = name;
+		this.prefix = prefix;
+		this.suffix = suffix;
 		this.folder = "images/" + this.name;
 		this.assetFlags = {
 			"head" : false,
@@ -105,7 +107,8 @@ class Pokemon {
 function createFusion(pokemon1, pokemon2) {
 	var pokemon1 = pokemonContainer[pokemon1];
 	var pokemon2 = pokemonContainer[pokemon2];
-	var fusion = new Pokemon("fusion");
+	var fusion = new Pokemon("fusion", pokemon1.prefix, pokemon2.suffix);
+	console.log(fusion.prefix + fusion.suffix);
 	
 	assetKeys = ["armLeft", "armRight", "wingLeft", "wingRight", "head", "tail"];
 	fusion.getAssetsFrom(pokemon2, assetKeys);
@@ -115,7 +118,7 @@ function createFusion(pokemon1, pokemon2) {
 }
 
 function setUpPokemon() {
-	var charizard = new Pokemon("charizard");
+	var charizard = new Pokemon("charizard", "chari", "zard");
 	pokemonContainer.charizard = charizard;
 	charizard.setAssetFlags(["head", "arms", "wings", "legs", "tail"]);
 	charizard.loadPokemonAssets();
@@ -141,7 +144,7 @@ function setUpPokemon() {
 	
 	charizard.setBehind(["tail", "armLeft", "wingLeft", "wingRight", "legLeft"]);
 	
-	var dragonite = new Pokemon("dragonite");
+	var dragonite = new Pokemon("dragonite", "drago", "nite");
 	pokemonContainer.dragonite = dragonite;
 	dragonite.setAssetFlags(["head", "arms", "wings", "legs", "tail"]);
 	dragonite.loadPokemonAssets();
